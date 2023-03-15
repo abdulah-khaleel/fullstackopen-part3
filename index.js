@@ -28,6 +28,15 @@ app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
 });
 
+app.get("/info", (request, response) => {
+  let infoPage = `<p>Phonebook has info for ${
+    Object.keys(persons).length
+  } people</p>
+    <p>${new Date().toUTCString()}</p> 
+  `;
+  response.send(infoPage);
+});
+
 app.get("/api/persons", (request, response) => {
   response.json(persons);
 });

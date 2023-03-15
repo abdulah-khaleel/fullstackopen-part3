@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+app.use(express.json());
+
 let persons = [
   {
     id: 1,
@@ -23,6 +25,35 @@ let persons = [
     number: "39-23-6423122",
   },
 ];
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+
+  if (!body.name) {
+    return response.status(400).json({
+      error: "name missing",
+    });
+  }
+  if (!body.number) {
+    return response.status(400).json({
+      error: "number missing",
+    });
+  }
+  if (persons.map((p) => p.name).includes(body.name)) {
+    return response.status(400).json({
+      error: "name must be unique",
+    });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: Math.floor(Math.random() * 99000 + 1),
+  };
+
+  persons = persons.concat(person);
+  response.json(person);
+});
 
 app.get("/", (request, response) => {
   response.send("<h1>Welcome to the phonebook app</h1>");

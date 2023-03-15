@@ -25,7 +25,7 @@ let persons = [
 ];
 
 app.get("/", (request, response) => {
-  response.send("<h1>Hello World!</h1>");
+  response.send("<h1>Welcome to the phonebook app</h1>");
 });
 
 app.get("/info", (request, response) => {
@@ -49,6 +49,13 @@ app.get("/api/persons/:id", (request, response) => {
   } else {
     response.status(404).end();
   }
+});
+
+app.delete("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  persons = persons.filter((p) => p.id !== id);
+
+  response.status(204).end();
 });
 
 const PORT = 3001;

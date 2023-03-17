@@ -5,12 +5,15 @@ const app = express()
 
 app.use(express.json())
 
-app.use(morgan('tiny'))
-
-app.get('/', function (req, res) {
-  console.log(res)
-  res.send('hello, world!')
+morgan.token('rqBody', function (req, res) {
+  const reqBody = JSON.stringify(req.body)
+  if (reqBody !== '{}') {
+    return `${reqBody}`
+  }
+  return ' '
 })
+
+app.use(morgan(':method :url :status - :response-time ms  :rqBody'))
 
 let persons = [
   {

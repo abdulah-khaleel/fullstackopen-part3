@@ -1,12 +1,11 @@
 const express = require('express')
+const app = express()
 const cors = require('cors')
+require('dotenv').config()
+
+const Person = require('./models/person')
 
 const morgan = require('morgan')
-const app = express()
-
-app.use(express.json())
-app.use(cors())
-app.use(express.static('build'))
 
 morgan.token('rqBody', function (req, res) {
   const reqBody = JSON.stringify(req.body)
@@ -15,34 +14,36 @@ morgan.token('rqBody', function (req, res) {
   }
   return ' '
 })
-
 app.use(morgan(':method :url :status - :response-time ms  :rqBody'))
+app.use(express.json())
+app.use(cors())
+app.use(express.static('build'))
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
 let persons = [
-  {
-    id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: 4,
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-  },
+  // {
+  //   id: 1,
+  //   name: 'Arto Hellas',
+  //   number: '040-123456',
+  // },
+  // {
+  //   id: 2,
+  //   name: 'Ada Lovelace',
+  //   number: '39-44-5323523',
+  // },
+  // {
+  //   id: 3,
+  //   name: 'Dan Abramov',
+  //   number: '12-43-234345',
+  // },
+  // {
+  //   id: 4,
+  //   name: 'Mary Poppendieck',
+  //   number: '39-23-6423122',
+  // },
 ]
 
 app.post('/api/persons', (request, response) => {
@@ -88,7 +89,9 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Person.find({}).then((persons) => {
+    response.json(persons)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -110,7 +113,8 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = 3001
+const PORT = process.env.PORT
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

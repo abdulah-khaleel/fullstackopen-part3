@@ -65,12 +65,14 @@ app.get('/', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-  let infoPage = `<p>Phonebook has info for ${
-    Object.keys(persons).length
-  } people</p>
+  Person.find({}).then((persons) => {
+    const infoPage = `<p>Phonebook has info for ${
+      Object.keys(persons).length
+    } people</p>
     <p>${new Date().toUTCString()}</p> 
   `
-  response.send(infoPage)
+    return response.send(infoPage)
+  })
 })
 
 app.get('/api/persons', (request, response) => {

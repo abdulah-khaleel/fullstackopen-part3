@@ -59,20 +59,21 @@ app.post('/api/persons', (request, response) => {
       error: 'number missing',
     })
   }
-  if (persons.map((p) => p.name).includes(body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique',
-    })
-  }
+  // if (persons.map((p) => p.name).includes(body.name)) {
+  //   return response.status(400).json({
+  //     error: 'name must be unique',
+  //   })
+  // }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: Math.floor(Math.random() * 99000 + 1),
-  }
+  })
 
-  persons = persons.concat(person)
-  response.json(person)
+  // persons = persons.concat(person)
+  person.save().then((savedPerson) => {
+    response.json(person)
+  })
 })
 
 app.get('/', (request, response) => {
@@ -95,13 +96,13 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find((p) => p.id === id)
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Person.findById(request.params.id)
+    .then((person) => {
+      response.json(person)
+    })
+    .catch(() => {
+      response.status(404).end()
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
